@@ -7,7 +7,8 @@ var materials = {
     'xstarts': [134, 134, 277],
     'ystarts': [218.5, 218.5, 205],
     'xends': [326, 320, 231.5],
-    'yends': [218.5, 126, 209]
+    'yends': [218.5, 126, 209],
+    'duration': [2, 2, 7]
 }
 
 var buzzer = new Audio('https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/audio/buzzer.wav');
@@ -25,6 +26,7 @@ function do_mirror(trialnumber) {
     var ystart = materials.ystarts[trialnumber];;
     var xend = materials.xends[trialnumber];
     var yend = materials.yends[trialnumber];
+    var trialDuration = materials.duration[trialnumber];
     var startRadius = 10;
     var inlineHeight = 12;
 
@@ -60,6 +62,7 @@ function do_mirror(trialnumber) {
 
     var status_div = document.getElementById('status_div');
     var errors_div = document.getElementById('errors_div');
+    var time_div = document.getElementById('time_div');
 
     status_div.textContent = "Click on the green circle to start the task."
 
@@ -68,6 +71,11 @@ function do_mirror(trialnumber) {
     // var paint_xy = document.getElementById('paint_xy');
     // var inline_div = document.getElementById('inline_div');
     // var drawing_div = document.getElementById('drawing_div');
+
+    // Start countdown
+    time_div.textContent = "Time: " + trialDuration + ":00";
+    let time = trialDuration * 60;
+    setInterval(countdown, 1000);
 
     // Load image
     var image = new Image();
@@ -90,7 +98,6 @@ function do_mirror(trialnumber) {
         drawCircle(ctx, width - xstart + inlineHeight, height - ystart, startRadius, 'green');
     };
 
-
     // Mouse Capturing
     canvas.addEventListener('mousemove', function (event) {
 
@@ -106,11 +113,10 @@ function do_mirror(trialnumber) {
 
         if (started) {
 
-            if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, startRect)) {
+            if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, startRect) && !finished) {
                 drawing = true;
                 prevInline = true;
 
-                status_div.textContent = ""
                 ctx_mirror_top.clearRect(0, 0, width, height);
             }
 
@@ -130,6 +136,10 @@ function do_mirror(trialnumber) {
                 }
             }
 
+            if (finished) {
+                ctx_mirror_top.fillStyle = "transparent";
+            }
+
         }
 
         // Debug: Drawing
@@ -144,11 +154,39 @@ function do_mirror(trialnumber) {
                 started = true;
                 ctx_mirror_top.clearRect(0, 0, width, height);
                 ctx.clearRect(0, 0, width, height);
+
+                status_div.textContent = "Start / re-start at the task at the green triangle. "
             }
 
         }, false);
 
     }, false);
+
+    function countdown() {
+
+        if (started && !finished) {
+            const minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+
+            leadingNull = '';
+
+            if (seconds < 10) {
+                leadingNull = 0;
+            }
+
+            time_div.textContent = "Time: " + minutes + ":" + leadingNull + seconds;
+
+            time--;
+
+            if (minutes <= 0 && seconds <= 0) {
+                time_div.textContent = "Time: 0:00";
+                status_div.textContent = "Maximum time reached. Task finished.";
+
+                finished = true;
+            }
+        }
+
+    }
 
     function checkInline(event, x, y) {
         var pixel = ctx_mirror.getImageData(x, y, 1, 1);
