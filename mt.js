@@ -1,10 +1,9 @@
 var materials = {
-    'mirror': [true, true, true, true, true, true, true, true],
     'file_names': [
         "https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/trials/trial1.png",
         "https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/trials/trial2.png",
     ],
-    'xstarts': [131],
+    'xstarts': [134],
     'ystarts': [227.5],
     'xends': [330],
     'yends': [227.5]
@@ -19,20 +18,31 @@ function do_mirror() {
 
     //load materials
     var imagePath = materials.file_names[trialnumber];
-    mirror = materials.mirror[trialnumber];
     var xstart = materials.xstarts[trialnumber];
     var ystart = materials.ystarts[trialnumber];;
-    var startRadius = 10;
-    var endRadius = 12;
     var xend = materials.xends[trialnumber];
     var yend = materials.yends[trialnumber];
 
-    // //states to track
+    var startRect = {
+        x: xstart,
+        y: ystart - 8,
+        width: 4,
+        height: 16
+    }
+
+    var endRect = {
+        x: xend,
+        y: yend - 8,
+        width: 4,
+        height: 16
+    }
+
+    // states to track
     drawing = false;
     finished = false;
     errors = 0;
 
-    //drawing contexts for cursor area and mirrored area
+    // drawing contexts for cursor area and mirrored area
     var canvas_mirror = document.getElementById('mirror');
     var ctx_mirror = canvas_mirror.getContext('2d');
 
@@ -60,19 +70,17 @@ function do_mirror() {
         ctx_mirror.drawImage(image, 0, 0, width, height);
         image.style.display = 'none';
 
-        // Draw start circle
-        drawCircle(ctx_mirror, xstart, ystart, startRadius, 'green');
+        // Debug: Draw start/end rects
+        ctx_mirror_top.fillStyle = "green";
+        ctx_mirror_top.fillRect(startRect.x, startRect.y, startRect.width, startRect.height);
+        ctx_mirror_top.fillStyle = "red";
+        ctx_mirror_top.fillRect(endRect.x, endRect.y, endRect.width, endRect.height);
 
-        // Draw end circle
-        drawCircle(ctx_mirror, xend, yend, endRadius, 'red');
     };
 
     function checkInline(event, x, y) {
         var pixel = ctx_mirror.getImageData(x, y, 1, 1);
         var data = pixel.data;
-
-        //const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
-        //return rgba;
 
         if (data[0] + data[1] + data[2] < 500) {
             inline_div.textContent = "Inline: true";
@@ -95,7 +103,7 @@ function do_mirror() {
     }
 
     function throwError(inline) {
-        if (inline != prevInline) {
+        if (inline != prevInline && prevInline) {
             errors++;
             prevInline = inline;
 
@@ -123,15 +131,16 @@ function do_mirror() {
         currentStartRadius = Math.sqrt(Math.pow(width - paint_pos.x - xstart, 2) + Math.pow(height - paint_pos.y - ystart, 2));
         currentEndRadius = Math.sqrt(Math.pow(width - paint_pos.x - xend, 2) + Math.pow(height - paint_pos.y - yend, 2));
 
-        if (currentStartRadius < startRadius) {
+        if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, startRect)) {
             drawing = true;
+            prevInline = true;
         }
 
         if (drawing && !finished) {
 
             throwError(inline);
 
-            if (currentEndRadius < endRadius) {
+            if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, endRect)) {
                 drawing = false;
                 finished = true;
 
@@ -143,12 +152,8 @@ function do_mirror() {
 
     }, false);
 
-    function drawCircle(ctx, x, y, r, color) {
-        ctx.globalAlpha = 0.4;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
-        ctx.fillStyle = color;
-        ctx.fill();
+    function pointIsInRect(x, y, rect) {
+        return (x > rect.x && x < rect.x + rect.width && y > rect.y && y < rect.y + rect.height);
     }
 
 }
