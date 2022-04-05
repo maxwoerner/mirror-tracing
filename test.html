@@ -41,38 +41,21 @@
         <canvas id="paint" width="400" height="300" class="border"></canvas>
     </div>
     <div style="text-align: center">
-        <div id="errors_div"></div>
-        <div id="status"></div>
-        <div id="mirror_xy"></div>
+        <div id="errors_div">Errors: 0</div>
+        <div id="status_div"></div>
+
+        <!-- Debug -->
+        <!-- <div id="mirror_xy"></div>
         <div id="paint_xy"></div>
         <div id="inline_div"></div>
-        <div id="drawing_div"></div>
+        <div id="drawing_div"></div> -->
     </div>
 
-    <script
-            src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-trace@b9e8d72d5b56b153b26b16d95b25b8404a9d2b71/base64.js">
-    </script>
-    <!-- <script src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-trace@b9e8d72d5b56b153b26b16d95b25b8404a9d2b71/canvas2image.js"></script> -->
     <script src="mt.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
     <script>
-        jQuery.noConflict();
-        // Define Trial number here
-        trialnumber = 0;
         // Start Mirror Trace
-        do_mirror();
-        // function debugValues() {
-        //     console.log("Score: " + score);
-        //     console.log("Time: " + timeDiff);
-        //     console.log("Crossings: " + crossings);
-        //     console.log("Finished: " + finished);
-        // }
-        // function debugLoop() {
-        //     window.setInterval(debugValues, 1000);
-        //     debugValues();
-        // }
-        // debugLoop();
+        do_mirror(0);
     </script>
 
 </body>

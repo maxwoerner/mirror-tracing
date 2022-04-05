@@ -4,50 +4,51 @@ var materials = {
         "https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/trials/trial2.png",
         "https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/trials/trial3.png",
     ],
-    'xstarts': [134],
-    'ystarts': [227.5],
-    'xends': [330],
-    'yends': [227.5]
+    'xstarts': [134, 134, 277],
+    'ystarts': [218.5, 218.5, 205],
+    'xends': [326, 320, 231.5],
+    'yends': [218.5, 126, 209]
 }
 
-var buzzer = new Audio('buzzer.wav');
+var buzzer = new Audio('https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/audio/buzzer.wav');
 
-//image dimensions
+// Image dimensions
 var width = 400;
 var height = 300;
 
-function do_mirror() {
+function do_mirror(trialnumber) {
     prevInline = false;
 
-    //load materials
+    // Load materials
     var imagePath = materials.file_names[trialnumber];
     var xstart = materials.xstarts[trialnumber];
     var ystart = materials.ystarts[trialnumber];;
     var xend = materials.xends[trialnumber];
     var yend = materials.yends[trialnumber];
     var startRadius = 10;
+    var inlineHeight = 12;
 
     var startRect = {
         x: xstart,
-        y: ystart - 8,
-        width: 4,
-        height: 16
+        y: ystart,
+        width: inlineHeight,
+        height: inlineHeight
     }
 
     var endRect = {
         x: xend,
-        y: yend - 8,
-        width: 4,
-        height: 16
+        y: yend,
+        width: inlineHeight,
+        height: inlineHeight
     }
 
-    // states to track
+    // States to track
     started = false;
     drawing = false;
     finished = false;
     errors = 0;
 
-    // drawing contexts for cursor area and mirrored area
+    // Drawing contexts for cursor area and mirrored area
     var canvas_mirror = document.getElementById('mirror');
     var ctx_mirror = canvas_mirror.getContext('2d');
 
@@ -57,33 +58,36 @@ function do_mirror() {
     var canvas_mirror_top = document.getElementById('mirror_top');
     var ctx_mirror_top = canvas_mirror_top.getContext('2d');
 
-    //load the image to trace
+    var status_div = document.getElementById('status_div');
+    var errors_div = document.getElementById('errors_div');
+
+    status_div.textContent = "Click on the green circle to start the task."
+
+    // Debug
+    // var mirror_xy = document.getElementById('mirror_xy');
+    // var paint_xy = document.getElementById('paint_xy');
+    // var inline_div = document.getElementById('inline_div');
+    // var drawing_div = document.getElementById('drawing_div');
+
+    // Load image
     var image = new Image();
     image.crossOrigin = "anonymous";
     image.src = imagePath;
 
-    var status = document.getElementById('status');
-
-    // Debug
-    var mirror_xy = document.getElementById('mirror_xy');
-    var paint_xy = document.getElementById('paint_xy');
-    var inline_div = document.getElementById('inline_div');
-    var drawing_div = document.getElementById('drawing_div');
-    var errors_div = document.getElementById('errors_div');
-
-    // Load image
     image.onload = function () {
         ctx_mirror.drawImage(image, 0, 0, width, height);
         image.style.display = 'none';
 
-        // Debug: Draw start/end rects
-        ctx_mirror_top.fillStyle = "green";
-        ctx_mirror_top.fillRect(startRect.x, startRect.y, startRect.width, startRect.height);
         ctx_mirror_top.fillStyle = "red";
-        ctx_mirror_top.fillRect(endRect.x, endRect.y, endRect.width, endRect.height);
+
+        // Debug: Draw start/end rects
+        // ctx_mirror_top.fillStyle = "green";
+        // ctx_mirror_top.fillRect(startRect.x, startRect.y, startRect.width, startRect.height);
+        // ctx_mirror_top.fillStyle = "red";
+        // ctx_mirror_top.fillRect(endRect.x, endRect.y, endRect.width, endRect.height);
 
         // Draw start circle
-        drawCircle(ctx, width - xstart, height - ystart, startRadius, 'green');
+        drawCircle(ctx, width - xstart + inlineHeight, height - ystart, startRadius, 'green');
     };
 
 
@@ -92,10 +96,11 @@ function do_mirror() {
 
         var paint_pos = getMousePos(event, canvas);
 
-        ctx_mirror_top.fillRect(width - paint_pos.x, height - paint_pos.y, 4, 4);
+        ctx_mirror_top.fillRect(width - paint_pos.x, height - paint_pos.y, 3, 3);
 
-        mirror_xy.textContent = "Mirror: X=" + (width - paint_pos.x) + " Y=" + (height - paint_pos.y);
-        paint_xy.textContent = "Paint: X=" + paint_pos.x + " Y=" + paint_pos.y;
+        // Debug: Coordinates
+        // mirror_xy.textContent = "Mirror: X=" + (width - paint_pos.x) + " Y=" + (height - paint_pos.y);
+        // paint_xy.textContent = "Paint: X=" + paint_pos.x + " Y=" + paint_pos.y;
 
         inline = checkInline(event, width - paint_pos.x, height - paint_pos.y);
 
@@ -104,6 +109,8 @@ function do_mirror() {
             if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, startRect)) {
                 drawing = true;
                 prevInline = true;
+
+                status_div.textContent = ""
                 ctx_mirror_top.clearRect(0, 0, width, height);
             }
 
@@ -119,18 +126,19 @@ function do_mirror() {
                     finished = true;
 
                     ctx_mirror_top.fillStyle = "transparent";
-                    status.textContent = "Finished!"
+                    status_div.textContent = "Task finished!"
                 }
             }
 
         }
 
-        drawing_div.textContent = "Drawing: " + drawing;
+        // Debug: Drawing
+        // drawing_div.textContent = "Drawing: " + drawing;
 
         // Start task with mouse click
         canvas.addEventListener('mousedown', function (event) {
 
-            currentRadius = Math.sqrt(Math.pow(width - paint_pos.x - xstart, 2) + Math.pow(height - paint_pos.y - ystart, 2));
+            currentRadius = Math.sqrt(Math.pow(width - paint_pos.x - xstart + inlineHeight, 2) + Math.pow(height - paint_pos.y - ystart, 2));
 
             if (currentRadius < startRadius) {
                 started = true;
@@ -147,10 +155,12 @@ function do_mirror() {
         var data = pixel.data;
 
         if (data[0] + data[1] + data[2] < 500) {
-            inline_div.textContent = "Inline: true";
+            // Debug: Inline
+            // inline_div.textContent = "Inline: true";
             return true;
         } else {
-            inline_div.textContent = "Inline: false";
+            // Debug: Inline
+            // inline_div.textContent = "Inline: false";
             return false;
         }
     }
@@ -167,7 +177,6 @@ function do_mirror() {
     }
 
     function throwError() {
-
         errors++;
         prevInline = inline;
 
@@ -180,7 +189,6 @@ function do_mirror() {
 
         errors_div.textContent = "Errors: " + errors;
     }
-
 
     function pointIsInRect(x, y, rect) {
         return (x > rect.x && x < rect.x + rect.width && y > rect.y && y < rect.y + rect.height);
