@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirror Tracing</title>
+</head>
+
+<style>
+    .container {
+        width: 400px;
+        height: 300px;
+        position: relative;
+    }
+
+    .center {
+        margin: auto;
+    }
+
+    .mirror {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .border {
+        border: 1px solid #000000;
+    }
+</style>
+
+<body>
+    <div class="container center">
+        <canvas id="mirror" width="400" height="300" class="border mirror"></canvas>
+        <canvas id="mirror_top" width="400" height="300" class="border mirror"></canvas>
+    </div>
+    <div class=" container center">
+        <canvas id="paint" width="400" height="300" class="border"></canvas>
+    </div>
+    <div style="text-align: center">
+        <div id="errors_div"></div>
+        <div id="status"></div>
+        <div id="mirror_xy"></div>
+        <div id="paint_xy"></div>
+        <div id="inline_div"></div>
+        <div id="drawing_div"></div>
+    </div>
+
+    <script
+            src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-trace@b9e8d72d5b56b153b26b16d95b25b8404a9d2b71/base64.js">
+    </script>
+    <!-- <script src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-trace@b9e8d72d5b56b153b26b16d95b25b8404a9d2b71/canvas2image.js"></script> -->
+    <script src="mt.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+    <script>
+        jQuery.noConflict();
+        // Define Trial number here
+        trialnumber = 0;
+        // Start Mirror Trace
+        do_mirror();
+        // function debugValues() {
+        //     console.log("Score: " + score);
+        //     console.log("Time: " + timeDiff);
+        //     console.log("Crossings: " + crossings);
+        //     console.log("Finished: " + finished);
+        // }
+        // function debugLoop() {
+        //     window.setInterval(debugValues, 1000);
+        //     debugValues();
+        // }
+        // debugLoop();
+    </script>
+
+</body>
+
+</html>
