@@ -2,12 +2,15 @@ var materials = {
     'file_names': [
         "https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/trials/trial1.png",
         "https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/trials/trial2.png",
+        "https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/trials/trial3.png",
     ],
     'xstarts': [134],
     'ystarts': [227.5],
     'xends': [330],
     'yends': [227.5]
 }
+
+var buzzer = new Audio('buzzer.wav');
 
 //image dimensions
 var width = 400;
@@ -22,6 +25,7 @@ function do_mirror() {
     var ystart = materials.ystarts[trialnumber];;
     var xend = materials.xends[trialnumber];
     var yend = materials.yends[trialnumber];
+    var startRadius = 10;
 
     var startRect = {
         x: xstart,
@@ -38,6 +42,7 @@ function do_mirror() {
     }
 
     // states to track
+    started = false;
     drawing = false;
     finished = false;
     errors = 0;
@@ -57,8 +62,9 @@ function do_mirror() {
     image.crossOrigin = "anonymous";
     image.src = imagePath;
 
-    // Debug
     var status = document.getElementById('status');
+
+    // Debug
     var mirror_xy = document.getElementById('mirror_xy');
     var paint_xy = document.getElementById('paint_xy');
     var inline_div = document.getElementById('inline_div');
@@ -76,7 +82,65 @@ function do_mirror() {
         ctx_mirror_top.fillStyle = "red";
         ctx_mirror_top.fillRect(endRect.x, endRect.y, endRect.width, endRect.height);
 
+        // Draw start circle
+        drawCircle(ctx, width - xstart, height - ystart, startRadius, 'green');
     };
+
+
+    // Mouse Capturing
+    canvas.addEventListener('mousemove', function (event) {
+
+        var paint_pos = getMousePos(event, canvas);
+
+        ctx_mirror_top.fillRect(width - paint_pos.x, height - paint_pos.y, 4, 4);
+
+        mirror_xy.textContent = "Mirror: X=" + (width - paint_pos.x) + " Y=" + (height - paint_pos.y);
+        paint_xy.textContent = "Paint: X=" + paint_pos.x + " Y=" + paint_pos.y;
+
+        inline = checkInline(event, width - paint_pos.x, height - paint_pos.y);
+
+        if (started) {
+
+            if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, startRect)) {
+                drawing = true;
+                prevInline = true;
+                ctx_mirror_top.clearRect(0, 0, width, height);
+            }
+
+            if (drawing && !finished) {
+                ctx_mirror_top.fillStyle = "green";
+
+                if (inline != prevInline && prevInline) {
+                    throwError();
+                }
+
+                if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, endRect)) {
+                    drawing = false;
+                    finished = true;
+
+                    ctx_mirror_top.fillStyle = "transparent";
+                    status.textContent = "Finished!"
+                }
+            }
+
+        }
+
+        drawing_div.textContent = "Drawing: " + drawing;
+
+        // Start task with mouse click
+        canvas.addEventListener('mousedown', function (event) {
+
+            currentRadius = Math.sqrt(Math.pow(width - paint_pos.x - xstart, 2) + Math.pow(height - paint_pos.y - ystart, 2));
+
+            if (currentRadius < startRadius) {
+                started = true;
+                ctx_mirror_top.clearRect(0, 0, width, height);
+                ctx.clearRect(0, 0, width, height);
+            }
+
+        }, false);
+
+    }, false);
 
     function checkInline(event, x, y) {
         var pixel = ctx_mirror.getImageData(x, y, 1, 1);
@@ -102,58 +166,32 @@ function do_mirror() {
         }
     }
 
-    function throwError(inline) {
-        if (inline != prevInline && prevInline) {
-            errors++;
-            prevInline = inline;
+    function throwError() {
 
-            drawing = false;
+        errors++;
+        prevInline = inline;
 
-            ctx_mirror_top.clearRect(0, 0, width, height);
-        }
+        drawing = false;
+
+        buzzer.play();
+
+        ctx_mirror_top.clearRect(0, 0, width, height);
+        ctx_mirror_top.fillStyle = "red";
 
         errors_div.textContent = "Errors: " + errors;
     }
 
-    // Mouse Capturing
-    canvas.addEventListener('mousemove', function (event) {
-
-        var paint_pos = getMousePos(event, canvas);
-
-        ctx_mirror_top.fillStyle = "#4287f5";
-        ctx_mirror_top.fillRect(width - paint_pos.x, height - paint_pos.y, 4, 4);
-
-        mirror_xy.textContent = "Mirror: X=" + (width - paint_pos.x) + " Y=" + (height - paint_pos.y);
-        paint_xy.textContent = "Paint: X=" + paint_pos.x + " Y=" + paint_pos.y;
-
-        inline = checkInline(event, width - paint_pos.x, height - paint_pos.y);
-
-        currentStartRadius = Math.sqrt(Math.pow(width - paint_pos.x - xstart, 2) + Math.pow(height - paint_pos.y - ystart, 2));
-        currentEndRadius = Math.sqrt(Math.pow(width - paint_pos.x - xend, 2) + Math.pow(height - paint_pos.y - yend, 2));
-
-        if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, startRect)) {
-            drawing = true;
-            prevInline = true;
-        }
-
-        if (drawing && !finished) {
-
-            throwError(inline);
-
-            if (pointIsInRect(width - paint_pos.x, height - paint_pos.y, endRect)) {
-                drawing = false;
-                finished = true;
-
-                status.textContent = "Finished!"
-            }
-        }
-
-        drawing_div.textContent = "Drawing: " + drawing;
-
-    }, false);
 
     function pointIsInRect(x, y, rect) {
         return (x > rect.x && x < rect.x + rect.width && y > rect.y && y < rect.y + rect.height);
+    }
+
+    function drawCircle(ctx, x, y, r, color) {
+        ctx.globalAlpha = 0.4;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
+        ctx.fillStyle = color;
+        ctx.fill();
     }
 
 }
