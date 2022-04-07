@@ -11,7 +11,7 @@ var materials = {
     'duration': [2, 2, 7]
 }
 
-var buzzer = new Audio('https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/audio/buzzer.wav');
+var buzzer = new Audio('https://raw.githubusercontent.com/mxwebdev/mirror-tracing/main/audio/buzzer.mp3');
 
 // Image dimensions
 var width = 400;
@@ -75,6 +75,7 @@ function do_mirror(trialnumber) {
     // Start countdown
     time_div.textContent = "Time: " + trialDuration + ":00";
     let time = trialDuration * 60;
+    let timeSpent = 0;
     setInterval(countdown, 1000);
 
     // Load image
@@ -117,6 +118,8 @@ function do_mirror(trialnumber) {
                 drawing = true;
                 prevInline = true;
 
+                status_div.textContent = "Stay within the black area."
+
                 ctx_mirror_top.clearRect(0, 0, width, height);
             }
 
@@ -132,7 +135,7 @@ function do_mirror(trialnumber) {
                     finished = true;
 
                     ctx_mirror_top.fillStyle = "transparent";
-                    status_div.textContent = "Task finished!"
+                    status_div.textContent = "Task FINISHED!";
                 }
             }
 
@@ -155,7 +158,7 @@ function do_mirror(trialnumber) {
                 ctx_mirror_top.clearRect(0, 0, width, height);
                 ctx.clearRect(0, 0, width, height);
 
-                status_div.textContent = "Start / re-start at the task at the green triangle. "
+                status_div.textContent = "Start the task at the green triangle."
             }
 
         }, false);
@@ -177,6 +180,7 @@ function do_mirror(trialnumber) {
             time_div.textContent = "Time: " + minutes + ":" + leadingNull + seconds;
 
             time--;
+            timeSpent = trialDuration * 60 - time;
 
             if (minutes <= 0 && seconds <= 0) {
                 time_div.textContent = "Time: 0:00";
@@ -225,6 +229,7 @@ function do_mirror(trialnumber) {
         ctx_mirror_top.clearRect(0, 0, width, height);
         ctx_mirror_top.fillStyle = "red";
 
+        status_div.textContent = "ERROR! Return to the green triangle."
         errors_div.textContent = "Errors: " + errors;
     }
 

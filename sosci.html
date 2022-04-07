@@ -7,10 +7,16 @@
 <div style="width: 400px; height: 300px; position: relative; margin: auto;">
     <canvas id="paint" width="400" height="300" style="border: 1px solid #000000;"></canvas>
 </div>
-<div style="text-align: center">
-    <div id="status_div"></div>
-    <div id="errors_div">Errors: 0</div>
-    <div id="time_div"></div>
+<div style="width: 400px; position: relative; margin: auto; font-size: large; font-family: sans-serif;">
+
+    <div style="display: flex; justify-content: center; padding: 1em;">
+        <div id="status_div" style="font-weight: bold;"></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; padding: 0 1em;">
+        <div id="errors_div">Errors: 0</div>
+        <div id="time_div"></div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-tracing@6d4d6a497b4f9f9396e8bd0859cd5cafea0aa014/mt.js">
@@ -24,6 +30,13 @@
 
     function updateScore() {
         mirror_errors.value = errors;
+        // Disable submit button until task is finished
+        submitButton = document.getElementById('submit0');
+        if (!finished) {
+            submitButton.disabled = true;
+        } else {
+            submitButton.disabled = false;
+        }
     }
     // Store values in SoSci Survey variables
     SoSciTools.attachEvent(window, "load", function (evt) {

@@ -8,42 +8,27 @@
     <title>Mirror Tracing</title>
 </head>
 
-<style>
-    .container {
-        width: 400px;
-        height: 300px;
-        position: relative;
-    }
-
-    .center {
-        margin: auto;
-    }
-
-    .mirror {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-
-    .border {
-        border: 1px solid #000000;
-    }
-</style>
-
 <body>
-    <div class="container center">
-        <canvas id="mirror" width="400" height="300" class="border mirror"></canvas>
-        <canvas id="mirror_top" width="400" height="300" class="border mirror"></canvas>
+
+    <div style="width: 400px; height: 300px; position: relative; margin: auto;">
+        <canvas id="mirror" width="400" height="300"
+                style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; border: 1px solid #000000;"></canvas>
+        <canvas id="mirror_top" width="400" height="300"
+                style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; border: 1px solid #000000;"></canvas>
     </div>
-    <div class=" container center">
-        <canvas id="paint" width="400" height="300" class="border"></canvas>
+    <div style="width: 400px; height: 300px; position: relative; margin: auto;">
+        <canvas id="paint" width="400" height="300" style="border: 1px solid #000000;"></canvas>
     </div>
-    <div style="text-align: center">
-        <div id="status_div"></div>
-        <div id="errors_div">Errors: 0</div>
-        <div id="time_div"></div>
+    <div style="width: 400px; position: relative; margin: auto; font-size: large; font-family: sans-serif;">
+
+        <div style="display: flex; justify-content: center; padding: 1em;">
+            <div id="status_div" style="font-weight: bold;"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; padding: 0 1em;">
+            <div id="errors_div">Errors: 0</div>
+            <div id="time_div"></div>
+        </div>
 
         <!-- Debug -->
         <!-- <div id="mirror_xy"></div>
