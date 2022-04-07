@@ -75,7 +75,7 @@ function do_mirror(trialnumber) {
     // Start countdown
     time_div.textContent = "Time: " + trialDuration + ":00";
     let time = trialDuration * 60;
-    var timeSpent = 0;
+    timeSpent = 0;
     setInterval(countdown, 1000);
 
     // Load image

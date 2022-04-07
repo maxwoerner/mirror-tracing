@@ -19,7 +19,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-tracing@7b9bf0c108dac38727bee73aac324b6bc5eb880b/mt.js">
+<script src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-tracing@c64497a73c32d605f50d0176179062a6a0106fc3/mt.js">
 </script>
 
 <script>
@@ -41,6 +41,10 @@
         } else {
             submitButton.disabled = false;
         }
+        // Debug
+        console.log(mt_errors.value);
+        console.log(mt_finished.value);
+        console.log(mt_timeSpent.value);
     }
     // Store values in SoSci Survey variables
     SoSciTools.attachEvent(window, "load", function (evt) {
