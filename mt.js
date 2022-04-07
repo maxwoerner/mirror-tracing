@@ -75,7 +75,7 @@ function do_mirror(trialnumber) {
     // Start countdown
     time_div.textContent = "Time: " + trialDuration + ":00";
     let time = trialDuration * 60;
-    let timeSpent = 0;
+    var timeSpent = 0;
     setInterval(countdown, 1000);
 
     // Load image
@@ -142,7 +142,6 @@ function do_mirror(trialnumber) {
             if (finished) {
                 ctx_mirror_top.fillStyle = "transparent";
             }
-
         }
 
         // Debug: Drawing

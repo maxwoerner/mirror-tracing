@@ -19,17 +19,21 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-tracing@6d4d6a497b4f9f9396e8bd0859cd5cafea0aa014/mt.js">
+<script src="https://cdn.jsdelivr.net/gh/mxwebdev/mirror-tracing@7b9bf0c108dac38727bee73aac324b6bc5eb880b/mt.js">
 </script>
 
 <script>
     // Start Mirror Trace
     do_mirror(0);
     // Define input elements to store values in SoSci Survey
-    var mirror_errors = document.getElementById("MT02_01");
+    var mt_errors = document.getElementById("MT02_01");
+    var mt_timeSpent = document.getElementById("MT02_02");
+    var mt_finished = document.getElementById("MT02_03");
 
     function updateScore() {
-        mirror_errors.value = errors;
+        mt_errors.value = errors;
+        mt_timeSpent.value = timeSpent;
+        mt_finished.value = finished;
         // Disable submit button until task is finished
         submitButton = document.getElementById('submit0');
         if (!finished) {
