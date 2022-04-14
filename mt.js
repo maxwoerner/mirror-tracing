@@ -223,7 +223,8 @@ function do_mirror(trialnumber) {
 
         drawing = false;
 
-        buzzer.play();
+        // buzzer.play();
+        document.getElementById('buzzer').play();
 
         ctx_mirror_top.clearRect(0, 0, width, height);
         ctx_mirror_top.fillStyle = "red";
